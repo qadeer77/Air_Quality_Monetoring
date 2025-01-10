@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "../Screens/Login";
-import Signup from "../Screens/Signup";
+import { Login, Signup } from "../Screens/index";
 import Navbar from "../components/Navbar";
 
 const AppRoutes = () => {
