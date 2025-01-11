@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   const API_KEY = "b794f2cd5d088a0954a775a8ec6423e4cb6e2023";
 
-  const fetchAQIData = async (city) => {
+  const fetchAQIData = async city => {
     setLoading(true); // Start loader
     try {
       const response = await fetch(
@@ -70,7 +70,7 @@ const Dashboard = () => {
           <input
             type="text"
             value={inputCity}
-            onChange={(e) => setInputCity(e.target.value)}
+            onChange={e => setInputCity(e.target.value)}
             placeholder="Enter city name"
             className="border border-gray-500 rounded-lg p-3 text-gray-900 focus:outline-none focus:none  w-72"
           />
