@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import "tailwindcss/tailwind.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ClipLoader } from "react-spinners";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import app from "../../firebase"; // Ensure this is your Firebase configuration file
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -7,9 +12,28 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = () => {
-    console.log("Signup pressed");
+  const handleSignup = async () => {
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match!", { position: "top-center" });
+      return;
+    }
+
+    const auth = getAuth(auth);
+    setLoading(true); // Start the loader
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      toast.success("User successfully signed up!", { position: "top-center" });
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      toast.error(`Error: ${error.message}`, { position: "top-center" });
+    } finally {
+      setLoading(false); // Stop the loader
+    }
   };
 
   return (
@@ -19,7 +43,7 @@ const Signup = () => {
           <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center uppercase tracking-wide">
             Sign Up
           </h1>
-          <form>
+          <form onSubmit={e => e.preventDefault()}>
             <div className="mb-4">
               <label
                 htmlFor="name"
@@ -95,10 +119,11 @@ const Signup = () => {
             </div>
             <button
               type="button"
-              className="w-full p-2 bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-md font-medium text-sm hover:opacity-90 transition duration-300"
+              className="w-full p-3 bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-md font-medium text-sm hover:opacity-90 transition duration-300 flex items-center justify-center"
               onClick={handleSignup}
+              disabled={loading}
             >
-              Sign Up
+              {loading ? <ClipLoader color="#ffffff" size={20} /> : "Sign Up"}
             </button>
           </form>
           <div className="mt-6 text-center text-gray-600">
@@ -112,6 +137,7 @@ const Signup = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
