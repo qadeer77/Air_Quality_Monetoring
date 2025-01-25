@@ -1,20 +1,41 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, navigate } from "react-router-dom";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import "tailwindcss/tailwind.css";
 
-const Login = ({ history }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log("Login pressed");
+  const auth = getAuth();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Logged in user:", userCredential.user);
+      setError(""); // Clear any previous errors
+      navigate("/dashboard"); // Navigate to the dashboard
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Invalid email or password. Please try again.");
+    }
   };
 
   const handleForgotPassword = () => {
-    // Handle forgot password logic here
     console.log("Forgot Password pressed");
+    // Additional logic for resetting the password can go here
   };
 
   return (
@@ -26,6 +47,9 @@ const Login = ({ history }) => {
         <p className="text-gray-600 text-sm mb-6 text-center">
           Log in to access your personalized dashboard
         </p>
+        {error && (
+          <p className="text-red-500 text-sm text-center mb-4">{error}</p>
+        )}
         <form>
           <div className="mb-4">
             <label
@@ -98,10 +122,7 @@ const Login = ({ history }) => {
         <div className="mt-6 text-center text-gray-600 text-sm">
           Don’t have an account?{" "}
           <Link to="/signup">
-            <button
-              className="text-gray-800 hover:text-gray-900 font-medium focus:outline-none"
-              onClick={() => history.push("/signup")}
-            >
+            <button className="text-gray-800 hover:text-gray-900 font-medium focus:outline-none">
               Sign Up
             </button>
           </Link>

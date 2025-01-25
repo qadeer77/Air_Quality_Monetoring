@@ -1,21 +1,23 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import PrivateRoute from "../PrivateRoute";
 import { Login, Signup, Dashboard } from "../Screens/index";
-import Navbar from "../components/Navbar";
 
 const AppRoutes = () => {
   return (
     <Router>
-      {/* <Navbar /> */}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route
-          path="/forgot-password"
-          component={() => <div>Forgot Password Page</div>}
-        />
-        {/* Add more routes as needed */}
+        <Route path="/dashboard" element={<PrivateRoute />}>
+          <Route path="" element={<Dashboard />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

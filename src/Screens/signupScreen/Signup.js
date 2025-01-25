@@ -1,10 +1,10 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Use useNavigate instead of useHistory
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase"; // Ensure this is your firebase configuration file
 import "tailwindcss/tailwind.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClipLoader } from "react-spinners";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import app from "../../firebase"; // Ensure this is your Firebase configuration file
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -13,6 +13,7 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleSignup = async () => {
     if (password !== confirmPassword) {
@@ -20,19 +21,19 @@ const Signup = () => {
       return;
     }
 
-    const auth = getAuth(auth);
-    setLoading(true); // Start the loader
+    setLoading(true); // Start loading indicator
+
     try {
+      // Create a new user with Firebase Authentication
       await createUserWithEmailAndPassword(auth, email, password);
       toast.success("User successfully signed up!", { position: "top-center" });
-      setName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
+
+      // Redirect user to the home page after successful signup
+      navigate("/"); // Navigate to home page after signup
     } catch (error) {
       toast.error(`Error: ${error.message}`, { position: "top-center" });
     } finally {
-      setLoading(false); // Stop the loader
+      setLoading(false); // Stop loading indicator
     }
   };
 
@@ -121,19 +122,18 @@ const Signup = () => {
               type="button"
               className="w-full p-3 bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-md font-medium text-sm hover:opacity-90 transition duration-300 flex items-center justify-center"
               onClick={handleSignup}
-              disabled={loading}
+              disabled={loading} // Disable the button when loading
             >
-              {loading ? <ClipLoader color="#ffffff" size={20} /> : "Sign Up"}
+              {loading ? "Loading..." : "Sign Up"}
             </button>
           </form>
           <div className="mt-6 text-center text-gray-600">
             Already have an account?{" "}
-            <button
-              className="text-gray-800 hover:text-gray-900 font-medium focus:outline-none"
-              onClick={() => (window.location.href = "/login")}
-            >
-              Log In
-            </button>
+            <Link to="/login">
+              <button className="text-gray-800 hover:text-gray-900 font-medium focus:outline-none">
+                Log In
+              </button>
+            </Link>
           </div>
         </div>
       </div>
