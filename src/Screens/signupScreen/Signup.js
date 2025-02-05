@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Use useNavigate instead of useHistory
+import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase"; // Ensure this is your firebase configuration file
 import "tailwindcss/tailwind.css";
@@ -38,56 +38,69 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="px-8 py-10">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center uppercase tracking-wide">
+    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      <video
+        autoPlay
+        loop
+        muted
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source
+          src="https://videos.pexels.com/video-files/2157006/2157006-sd_640_360_25fps.mp4"
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative z-10 w-full max-w-sm bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="px-8 py-6">
+          <h1 className="text-2xl font-semibold text-gray-800 mb-4 text-center uppercase tracking-wide">
             Sign Up
           </h1>
           <form onSubmit={e => e.preventDefault()}>
-            <div className="mb-4">
+            <div className="mb-3">
               <label
                 htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Full Name
               </label>
               <input
                 id="name"
-                className="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="p-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 type="text"
                 placeholder="Enter your name"
                 value={name}
                 onChange={e => setName(e.target.value)}
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-3">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Email Address
               </label>
               <input
                 id="email"
-                className="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="p-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-3">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
-                  className="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="p-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
@@ -102,16 +115,16 @@ const Signup = () => {
                 </button>
               </div>
             </div>
-            <div className="mb-6">
+            <div className="mb-4">
               <label
                 htmlFor="confirm-password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Confirm Password
               </label>
               <input
                 id="confirm-password"
-                className="p-3 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="p-2 border border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 type="password"
                 placeholder="Confirm your password"
                 value={confirmPassword}
@@ -120,14 +133,14 @@ const Signup = () => {
             </div>
             <button
               type="button"
-              className="w-full p-3 bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-md font-medium text-sm hover:opacity-90 transition duration-300 flex items-center justify-center"
+              className="w-full p-2 bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-md font-medium text-sm hover:opacity-90 transition duration-300 flex items-center justify-center"
               onClick={handleSignup}
               disabled={loading} // Disable the button when loading
             >
               {loading ? "Loading..." : "Sign Up"}
             </button>
           </form>
-          <div className="mt-6 text-center text-gray-600">
+          <div className="mt-4 text-center text-gray-600">
             Already have an account?{" "}
             <Link to="/login">
               <button className="text-gray-800 hover:text-gray-900 font-medium focus:outline-none">

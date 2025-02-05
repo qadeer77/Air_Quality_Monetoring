@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Dashboard = () => {
-  const [city, setCity] = useState("karachi");
+  const [city, setCity] = useState("Karachi");
   const [inputCity, setInputCity] = useState("");
   const [cardData, setCardData] = useState([
     { title: "Current AQI", value: "Loading..." },
@@ -30,239 +31,169 @@ const Dashboard = () => {
     "Mumbai",
     "Beijing",
     "Berlin",
-    "Moscow",
-    "Dubai",
-    "Cairo",
-    "Bangkok",
-    "Toronto",
-    "Singapore",
-    "Los Angeles",
-    "Seoul",
-    "Madrid",
-    "Rome",
-    "Istanbul",
-    "Cape Town",
-    "Buenos Aires",
-    "Rio de Janeiro",
-    "Mexico City",
-    "Jakarta",
-    "Kuala Lumpur",
-    "Hong Kong",
-    "Shanghai",
-    "Delhi",
-    "Barcelona",
-    "Melbourne",
-    "Amsterdam",
-    "Vienna",
-    "Lisbon",
-    "Dublin",
-    "Stockholm",
-    "Zurich",
-    "Geneva",
-    "Athens",
-    "Prague",
-    "Warsaw",
-    "Helsinki",
-    "Oslo",
-    "Copenhagen",
-    "Brussels",
-    "Manila",
-    "Santiago",
-    "Lima",
-    "Bogotá",
   ];
 
-  const fetchAQIData = async city => {
+  useEffect(() => {
+    fetchData(city);
+  }, [city]);
+
+  const fetchData = async city => {
     setLoading(true);
-    setShowAdvice(false);
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `https://api.waqi.info/feed/${city}/?token=${API_KEY}`
       );
-      const data = await response.json();
-
-      if (data.status === "error") {
-        setCardData([
-          { title: "Current AQI", value: "City not found" },
-          { title: "PM2.5 Levels", value: "-" },
-          { title: "PM10 Levels", value: "-" },
-        ]);
-        setWeatherAdvice(
-          "City not found. Please check the name and try again."
-        );
-        setBackgroundClass("from-gray-800 to-black");
-        setAdditionalData([]);
-        setLoading(false);
-        return;
-      }
-
-      const aqi = data.data.aqi || "N/A";
-      const pm25 = data.data.iaqi?.pm25?.v || "N/A";
-      const pm10 = data.data.iaqi?.pm10?.v || "N/A";
-      const temperature = data.data.iaqi?.t?.v || "N/A";
-      const humidity = data.data.iaqi?.h?.v || "N/A";
-      const windSpeed = data.data.iaqi?.w?.v || "N/A";
-
+      const data = response.data.data;
       setCardData([
-        { title: "Current AQI", value: `${aqi}` },
-        { title: "PM2.5 Levels", value: `${pm25} µg/m³` },
-        { title: "PM10 Levels", value: `${pm10} µg/m³` },
+        { title: "Current AQI", value: data.aqi },
+        { title: "PM2.5 Levels", value: data.iaqi.pm25?.v || "N/A" },
+        { title: "PM10 Levels", value: data.iaqi.pm10?.v || "N/A" },
       ]);
-
-      setAdditionalData([
-        { title: "Temperature", value: `${temperature} °C` },
-        { title: "Humidity", value: `${humidity} %` },
-        { title: "Wind Speed", value: `${windSpeed} m/s` },
-      ]);
-
-      if (aqi <= 70) {
-        setBackgroundClass("from-green-400 via-blue-400 to-green-500");
-        setWeatherAdvice("Air quality is good. It's safe to go outside.");
-      } else if (aqi <= 100) {
-        setBackgroundClass("from-yellow-400 via-orange-400 to-yellow-600");
-        setWeatherAdvice(
-          "Air quality is moderate. Sensitive groups should be cautious."
-        );
-      } else if (aqi <= 150) {
-        setBackgroundClass("from-orange-400 via-red-500 to-orange-600");
-        setWeatherAdvice(
-          "Unhealthy for sensitive groups. Consider limiting outdoor activities."
-        );
-      } else if (aqi <= 200) {
-        setBackgroundClass("from-red-500 via-red-600 to-red-900");
-        setWeatherAdvice("Unhealthy air quality. Limit outdoor activities.");
-      } else if (aqi <= 300) {
-        setBackgroundClass("from-red-600 via-black to-red-900");
-        setWeatherAdvice("Very unhealthy air quality. Avoid going outside.");
-      } else {
-        setBackgroundClass("from-black to-gray-900");
-        setWeatherAdvice(
-          "Hazardous air quality! Stay indoors and use air purifiers."
-        );
-      }
+      setAdditionalData(data.iaqi);
+      setWeatherAdvice(data.dominentpol);
       setShowAdvice(true);
+      setBackgroundClass(getBackgroundClass(data.aqi));
     } catch (error) {
-      console.error("Error fetching AQI data:", error);
-      setWeatherAdvice("Error fetching data. Please try again later.");
+      console.error("Error fetching data:", error);
+      setCardData([
+        { title: "Current AQI", value: "Error" },
+        { title: "PM2.5 Levels", value: "Error" },
+        { title: "PM10 Levels", value: "Error" },
+      ]);
+      setWeatherAdvice("Failed to fetch data. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchAQIData(city);
-  }, [city]);
+  const getBackgroundClass = aqi => {
+    if (aqi <= 50) return "from-green-400 to-green-600";
+    if (aqi <= 100) return "from-yellow-400 to-yellow-600";
+    if (aqi <= 150) return "from-orange-300 to-orange-700";
+    if (aqi <= 200) return "from-red-300 to-red-500";
+    if (aqi <= 350) return "from-red-900 to-red-700";
+    return "from-maroon-400 to-maroon-600";
+  };
 
-  const handleSearch = () => {
-    if (inputCity.trim()) {
+  const handleCityChange = e => {
+    setInputCity(e.target.value);
+  };
+
+  const handleCitySubmit = e => {
+    e.preventDefault();
+    if (inputCity) {
       setCity(inputCity);
-      setInputCity(""); // Clear the search bar
+      setInputCity("");
     }
-  };
-
-  const handleKeyDown = event => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
-
-  const handleCitySelect = event => {
-    setCity(event.target.value);
-    setInputCity(""); // Clear the search bar
   };
 
   return (
     <div
-      className={`font-sans bg-gradient-to-br ${backgroundClass} text-white min-h-screen`}
+      className={`min-h-screen bg-gradient-to-br ${backgroundClass} p-8 transition-all duration-500`}
     >
-      <header className="flex justify-between bg-black bg-opacity-30 backdrop-blur text-white py-4 px-10 shadow-lg">
-        <div>
-          <h1 className="text-4xl font-bold">🌍 Air Quality Dashboard</h1>
-          <p className="text-white mt-2 ml-10">
-            Monitor the air quality of your city in real-time.
-          </p>
-        </div>
-        <div className="flex justify-end">
-          <div className="relative w-full max-w-md">
-            <div className="flex items-center border border-gray-300 rounded-full bg-white shadow-sm">
-              <input
-                type="text"
-                value={inputCity}
-                onChange={e => setInputCity(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Search city"
-                className="flex-1 px-4 py-2 text-sm text-gray-700 bg-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <select
-                className="text-sm text-gray-700 bg-transparent pr-4 py-2 focus:outline-none"
-                onChange={handleCitySelect}
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-5xl font-bold text-white mb-8 text-center drop-shadow-md">
+          🌍 Air Quality Dashboard
+        </h1>
+
+        {/* Search Section */}
+        <div className="mb-8 bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
+          <form onSubmit={handleCitySubmit} className="flex gap-4">
+            <input
+              type="text"
+              value={inputCity}
+              onChange={handleCityChange}
+              placeholder="Search city..."
+              className="flex-1 p-3 rounded-xl border-2 border-white/30 bg-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white"
+            />
+            <button
+              type="submit"
+              className="px-6 py-3 bg-white/30 hover:bg-white/40 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2"
+            >
+              🔍 Search
+            </button>
+          </form>
+
+          {/* City Quick Select */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {cities.map(c => (
+              <button
+                key={c}
+                onClick={() => setCity(c)}
+                className={`px-4 py-2 rounded-lg transition-all ${
+                  city === c
+                    ? "bg-white/40 text-white"
+                    : "bg-white/20 hover:bg-white/30 text-white/90"
+                }`}
               >
-                <option value="" disabled selected>
-                  Select
-                </option>
-                {cities.map(city => (
-                  <option key={city} value={city}>
-                    {city.charAt(0).toUpperCase() + city.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {c}
+              </button>
+            ))}
           </div>
         </div>
-      </header>
 
-      <main className="container mx-auto p-6">
-        {loading ? (
-          <div className="flex justify-center items-center mt-12">
-            <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {cardData.map((card, index) => (
-                <div
-                  key={index}
-                  className="bg-black bg-opacity-30 rounded-lg shadow-lg p-6 text-center hover:scale-105 transform transition-all duration-300 backdrop-blur-md"
-                >
-                  <h2 className="text-lg font-semibold text-gray-300 uppercase tracking-wider">
-                    {card.title}
-                  </h2>
-                  <p className="text-3xl font-bold text-gray-100 mt-4">
-                    {card.value}
-                  </p>
+        {/* Data Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {cardData.map((card, index) => (
+            <div
+              key={index}
+              className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-xl hover:transform hover:scale-105 transition-all duration-300"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-white/20 rounded-lg">
+                  {["🌤️", "📉", "📈"][index]}
                 </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              {additionalData.map((card, index) => (
-                <div
-                  key={index}
-                  className="bg-black bg-opacity-30 rounded-lg shadow-lg p-6 text-center hover:scale-105 transform transition-all duration-300 backdrop-blur-md"
-                >
-                  <h2 className="text-lg font-semibold text-gray-300 uppercase tracking-wider">
-                    {card.title}
-                  </h2>
-                  <p className="text-3xl font-bold text-gray-100 mt-4">
-                    {card.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {showAdvice && (
-              <div className="mt-5 text-center bg-white bg-opacity-80 text-gray-900 rounded-lg shadow-lg p-4 max-w-xl mx-auto transition-transform transform scale-105">
-                <h3 className="text-xl font-bold mb-4">⚠️ Important Notice!</h3>
-                <p className="text-lg">{weatherAdvice}</p>
+                <h2 className="text-xl font-semibold text-white">
+                  {card.title}
+                </h2>
               </div>
-            )}
-          </>
-        )}
-      </main>
+              <p className="text-4xl font-bold text-white">
+                {loading ? "..." : card.value}
+                {index > 0 && <span className="text-lg ml-2">µg/m³</span>}
+              </p>
+            </div>
+          ))}
+        </div>
 
-      <footer className="text-white text-center py-4">
-        <p>© 2025 Air Quality Monitoring</p>
-      </footer>
+        {/* Weather Advice */}
+        {showAdvice && (
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 shadow-xl animate-fadeIn">
+            <h2 className="text-xl font-semibold text-white mb-3">
+              ⚠️ Health Advisory
+            </h2>
+            <p className="text-white/90 leading-relaxed">
+              {weatherAdvice === "pm25" && (
+                <>
+                  High PM2.5 levels detected. Consider reducing outdoor
+                  activities and using air purifiers indoors.
+                </>
+              )}
+              {weatherAdvice === "pm10" && (
+                <>
+                  Elevated PM10 particles present. Sensitive groups should take
+                  precautions when going outside.
+                </>
+              )}
+              {weatherAdvice === "o3" && (
+                <>
+                  Ozone levels are rising. Avoid prolonged exposure during peak
+                  sunlight hours.
+                </>
+              )}
+              {weatherAdvice === "Fetching data..." && weatherAdvice}
+              {weatherAdvice === "Failed to fetch data. Please try again." &&
+                weatherAdvice}
+            </p>
+          </div>
+        )}
+
+        {/* Loading Overlay */}
+        {loading && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
