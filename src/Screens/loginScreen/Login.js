@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "tailwindcss/tailwind.css";
@@ -30,23 +35,46 @@ const Login = () => {
       toast.success("Login successful!");
       navigate("/dashboard"); // Navigate to the dashboard
     } catch (err) {
-      console.error("Login error:", err);
-      toast.error(`Error: ${err.message}`); // Display the specific error message
+      toast.error(`Error: ${err.message}`);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      toast.success("Successfully logged in with Google!");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(`Error: ${error.message}`);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="relative flex items-center justify-center min-h-screen">
+      <video
+        autoPlay
+        loop
+        muted
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source
+          src="https://videos.pexels.com/video-files/2157006/2157006-sd_640_360_25fps.mp4"
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative z-10 w-full max-w-md bg-white/20 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden">
         <div className="px-8 py-10">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center uppercase tracking-wide">
+          <h1 className="text-2xl font-semibold text-white mb-6 text-center uppercase tracking-wide">
             Login
           </h1>
           <form onSubmit={handleLogin}>
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white mb-2"
               >
                 Email Address
               </label>
@@ -62,7 +90,7 @@ const Login = () => {
             <div className="mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-white mb-2"
               >
                 Password
               </label>
@@ -91,7 +119,19 @@ const Login = () => {
               Login
             </button>
           </form>
-          <div className="mt-6 text-center text-gray-600">
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full mt-4 p-3 bg-white text-gray-700 rounded-md font-medium text-sm hover:bg-gray-100 transition duration-300 flex items-center justify-center"
+          >
+            <img
+              src="https://www.google.com/favicon.ico"
+              alt="Google"
+              className="w-5 h-5 mr-2"
+            />
+            Login with Google
+          </button>
+          <div className="mt-6 text-center text-white">
             Don't have an account?{" "}
             <Link to="/signup">
               <button className="text-gray-800 hover:text-gray-900 font-medium focus:outline-none">
