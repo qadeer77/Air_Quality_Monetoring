@@ -1,7 +1,8 @@
-import "./App.css";
+import React from "react";
+import AppRoutes from "./routes/Routes"; // Import your routes here
 
-function App() {
-  return <></>;
-}
+const App = () => {
+  return <AppRoutes />;
+};
 
-export default App;
+export default App; // Export the App component

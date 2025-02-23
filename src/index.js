@@ -1,17 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import AppRoutes from "./routes/Routes"; // Ensure this is the correct path to your AppRoutes component
+import { AuthProvider } from "./AuthContext"; // Ensure this is the correct path to your AuthProvider
+import "./index.css"; // Ensure this is the correct path to your CSS file
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById("root");
+
+// Use createRoot instead of render
+const root = ReactDOM.createRoot(rootElement);
+
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
