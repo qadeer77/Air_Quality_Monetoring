@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Navbar from "../../components/Navbar";
 
 const Dashboard = () => {
   const [city, setCity] = useState("Karachi");
@@ -67,10 +68,10 @@ const Dashboard = () => {
   };
 
   const getBackgroundClass = aqi => {
-    if (aqi <= 50) return "from-green-400 to-green-600";
-    if (aqi <= 100) return "from-yellow-400 to-yellow-600";
-    if (aqi <= 150) return "from-orange-300 to-orange-700";
-    if (aqi <= 200) return "from-red-300 to-red-500";
+    if (aqi <= 50) return "from-green-400 to-green-800";
+    if (aqi <= 100) return "from-yellow-400 to-yellow-800";
+    if (aqi <= 150) return "from-orange-300 to-orange-800";
+    if (aqi <= 200) return "from-red-300 to-red-400";
     if (aqi <= 350) return "from-red-900 to-red-700";
     return "from-maroon-400 to-maroon-600";
   };
@@ -91,11 +92,8 @@ const Dashboard = () => {
     <div
       className={`min-h-screen bg-gradient-to-br ${backgroundClass} p-8 transition-all duration-500`}
     >
+      <Navbar />
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-5xl font-bold text-white mb-8 text-center drop-shadow-md">
-          🌍 Air Quality Dashboard
-        </h1>
-
         {/* Search Section */}
         <div className="mb-8 bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-xl">
           <form onSubmit={handleCitySubmit} className="flex gap-4">
