@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext";
 import Navbar from "../../components/Navbar";
+
+// A helper function that returns a background gradient based on the AQI value.
+const getBackgroundClass = aqi => {
+  if (aqi <= 50) return "from-green-400 to-green-600";
+  if (aqi <= 100) return "from-yellow-400 to-yellow-600";
+  if (aqi <= 150) return "from-orange-400 to-orange-600";
+  if (aqi <= 200) return "from-red-400 to-red-600";
+  if (aqi <= 300) return "from-purple-400 to-purple-600";
+  return "from-maroon-400 to-maroon-600";
+};
 
 const Dashboard = () => {
   const [city, setCity] = useState("Karachi");
@@ -13,7 +22,6 @@ const Dashboard = () => {
     { title: "PM2.5 Levels", value: "Loading..." },
     { title: "PM10 Levels", value: "Loading..." },
   ]);
-  const [additionalData, setAdditionalData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [backgroundClass, setBackgroundClass] = useState(
     "from-blue-900 via-purple-500 to-pink-600"
@@ -22,79 +30,57 @@ const Dashboard = () => {
   const [showAdvice, setShowAdvice] = useState(false);
 
   const API_KEY = process.env.REACT_APP_WAQI_API_KEY;
-
-  const cities = [
-    "Karachi",
-    "Lahore",
-    "Islamabad",
-    "New York",
-    "London",
-    "Tokyo",
-    "Paris",
-    "Sydney",
-    "Mumbai",
-    "Beijing",
-    "Berlin",
-  ];
-
   const auth = getAuth();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
 
+  // Wrap fetchData in useCallback so that it's stable and can be added as a dependency
+  const fetchData = useCallback(
+    async selectedCity => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://api.waqi.info/feed/${selectedCity}/?token=${API_KEY}`
+        );
+        const data = response.data.data;
+        setCardData([
+          { title: "Current AQI", value: data.aqi },
+          {
+            title: "PM2.5 Levels",
+            value: data.iaqi.pm25 ? data.iaqi.pm25.v : "N/A",
+          },
+          {
+            title: "PM10 Levels",
+            value: data.iaqi.pm10 ? data.iaqi.pm10.v : "N/A",
+          },
+        ]);
+        setWeatherAdvice(data.dominentpol);
+        setShowAdvice(true);
+        setBackgroundClass(getBackgroundClass(data.aqi));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [API_KEY]
+  );
+
+  // Now include fetchData in dependency array to satisfy eslint-react-hooks/exhaustive-deps
   useEffect(() => {
     fetchData(city);
-  }, [city]);
+  }, [city, fetchData]);
 
-  const fetchData = async city => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `https://api.waqi.info/feed/${city}/?token=${API_KEY}`
-      );
-      const data = response.data.data;
-      setCardData([
-        { title: "Current AQI", value: data.aqi },
-        { title: "PM2.5 Levels", value: data.iaqi.pm25.v },
-        { title: "PM10 Levels", value: data.iaqi.pm10.v },
-      ]);
-      setAdditionalData(data.iaqi);
-      setWeatherAdvice(data.dominentpol);
-      setShowAdvice(true);
-      setBackgroundClass(getBackgroundClass(data.aqi));
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getBackgroundClass = aqi => {
-    if (aqi <= 50) return "from-green-400 to-green-600";
-    if (aqi <= 100) return "from-yellow-400 to-yellow-600";
-    if (aqi <= 150) return "from-orange-400 to-orange-600";
-    if (aqi <= 200) return "from-red-400 to-red-600";
-    if (aqi <= 300) return "from-purple-400 to-purple-600";
-    return "from-maroon-400 to-maroon-600";
-  };
-
+  // Update input field value
   const handleCityChange = e => {
     setInputCity(e.target.value);
   };
 
+  // Submit the new city and trigger new API call
   const handleCitySubmit = e => {
     e.preventDefault();
     if (inputCity) {
       setCity(inputCity);
       setInputCity("");
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
     }
   };
 
