@@ -74,8 +74,8 @@ const Dashboard = () => {
   const [precaution, setPrecaution] = useState({ message: "", color: "" });
 
   const API_KEY = process.env.REACT_APP_WAQI_API_KEY;
-  const auth = getAuth();
-  const navigate = useNavigate();
+  // const auth = getAuth();
+  // const navigate = useNavigate();
 
   const fetchData = useCallback(
     async selectedCity => {
