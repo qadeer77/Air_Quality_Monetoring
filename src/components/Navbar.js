@@ -18,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white/20 backdrop-blur-sm rounded-xl py-5 px-2  animate-fadeIn flex justify-between items-center shadow-md mt-0 mb-5">
+    <nav className=" backdrop-blur-sm rounded-xl py-5 px-5 animate-fadeIn flex justify-between items-center shadow-md mt-0 mb-5">
       {/* Left Side - User Info */}
       <div className="flex items-center gap-3">
         {user && (
@@ -28,14 +28,16 @@ const Navbar = () => {
               alt="User Avatar"
               className="w-10 h-10 rounded-full border border-gray-500"
             />
-            <span className="text-white font-semibold">{user.displayName}</span>
+            <span className="text-gray-100 drop-shadow-xl font-semibold">
+              {user.displayName}
+            </span>
           </>
         )}
       </div>
 
       {/* Center - App Logo and Name */}
       <div className="flex items-center gap-2">
-        <h1 className="text-2xl font-bold text-white text-center drop-shadow-md">
+        <h1 className="text-3xl font-bold text-gray-100 drop-shadow-xl text-center">
           🌍 Air Quality Dashboard
         </h1>
       </div>
