@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import PrivateRoute from "../PrivateRoute";
+// import PrivateRoute from "../PrivateRoute";
 import Home from "../Screens/homescreen/Home"; // Ensure the correct path
 import Login from "../Screens/loginScreen/Login"; // Ensure the correct path
 import Signup from "../Screens/signupScreen/Signup"; // Ensure the correct path

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { getAuth } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+// import { getAuth } from "firebase/auth";
+// import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import bgGood from "../../assets/bg-good.jpg.jpg";
 import bgunhealthy from "../../assets/bg-unhealthy-sensitive.jpeg";
