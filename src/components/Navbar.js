@@ -18,7 +18,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className=" backdrop-blur-sm rounded-xl py-5 px-5 animate-fadeIn flex justify-between items-center shadow-md mt-0 mb-5">
+    <nav className=" backdrop-blur-sm bg-white bg-opacity-30 rounded-xl py-5 px-5 animate-fadeIn flex justify-between items-center shadow-md mt-0 mb-5">
       {/* Left Side - User Info */}
       <div className="flex items-center gap-3">
         {user && (

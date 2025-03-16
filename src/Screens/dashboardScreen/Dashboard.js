@@ -4,6 +4,8 @@ import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import bgGood from "../../assets/bg-good.jpg.jpg";
+import bgunhealthy from "../../assets/bg-unhealthy-sensitive.jpeg";
+import bgveryunhealthy from "../../assets/bg-very-unhealthy.jpeg";
 
 const suggestedCities = [
   "New York",
@@ -52,11 +54,11 @@ const getBackgroundUrl = aqi => {
   // Return corresponding background image URLs – ensure these images exist in public/
   if (aqi === null) return "/default-bg.jpg";
   if (aqi <= 50) return bgGood;
-  if (aqi <= 100) return "/bg-moderate.jpg";
-  if (aqi <= 150) return "/bg-unhealthy-sensitive.jpg";
-  if (aqi <= 200) return "/bg-unhealthy.jpg";
-  if (aqi <= 300) return "/bg-very-unhealthy.jpg";
-  return "/bg-hazardous.jpg";
+  if (aqi <= 100) return bgunhealthy;
+  if (aqi <= 150) return bgunhealthy;
+  if (aqi <= 200) return bgveryunhealthy;
+  if (aqi <= 300) return bgveryunhealthy;
+  return bgGood;
 };
 
 const Dashboard = () => {
@@ -134,6 +136,7 @@ const Dashboard = () => {
       style={{
         backgroundImage: `url(${bgUrl})`,
         backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
       }}
     >
@@ -151,11 +154,11 @@ const Dashboard = () => {
               value={inputCity}
               onChange={handleCityChange}
               placeholder="Enter city name"
-              className="w-10 sm:w-auto p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
+              className="min-w-72 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition shadow"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow"
             >
               Search
             </button>
@@ -166,7 +169,7 @@ const Dashboard = () => {
               <button
                 key={index}
                 onClick={() => handleSuggestionClick(suggestedCity)}
-                className="px-4 py-2 border border-gray-300 text-white drop-shadow-2xl shadow-black font-semibold rounded-full bg-white bg-opacity-30 hover:bg-opacity-50 transition text-sm"
+                className="px-4 py-2 border border-gray-300 text-gray-700 drop-shadow-2xl shadow-black font-semibold rounded-full bg-white bg-opacity-70 hover:bg-opacity-50 transition text-md"
               >
                 {suggestedCity}
               </button>
@@ -183,7 +186,7 @@ const Dashboard = () => {
             {cardData.map((card, index) => (
               <div
                 key={index}
-                className="p-6 animate-fadeIn bg-opacity-90 backdrop-blur-sm rounded-lg shadow-md"
+                className="p-6 animate-fadeIn bg-white bg-opacity-30 backdrop-blur-sm rounded-lg shadow-md"
               >
                 <h2 className="text-xl text-center font-medium text-gray-100 mb-2">
                   {card.title}
@@ -197,9 +200,9 @@ const Dashboard = () => {
           {/* Precaution / Health Advisory Popup */}
           {aqiValue !== null && (
             <div
-              className={`mt-8 p-6 border-l-4 ${precaution.color}  bg-opacity-10 backdrop-blur-sm rounded shadow-lg`}
+              className={`mt-8 p-6 border-l-4 ${precaution.color} bg-white bg-opacity-30  backdrop-blur-sm rounded shadow-lg`}
             >
-              <h2 className="text-2xl font-medium text-gray-100 mb-2">
+              <h2 className="text-2xl  font-medium text-gray-100 mb-2">
                 Air Quality Advisory
               </h2>
               <p className="text-gray-100">{precaution.message}</p>
