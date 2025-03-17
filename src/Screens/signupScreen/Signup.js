@@ -29,7 +29,7 @@ const Signup = () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       toast.success("User successfully signed up!", { position: "top-center" });
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(`Error: ${error.message}`, { position: "top-center" });
     } finally {
